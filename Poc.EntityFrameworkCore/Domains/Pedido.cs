@@ -12,7 +12,7 @@ namespace Poc.EntityFrameworkCore.Console.Domains
         public DateTime Iniciado { get; set; }
         public DateTime Finalizado { get; set; }
         public TipoFrete TipoFrete { get; set; }
-        public StatusPedido StatusPedido { get; set; }
+        public StatusPedido Status { get; set; }
         public string Observacao { get; set; }
         public ICollection<PedidoItem> Itens { get; set; }
     }
