@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Poc.EntityFrameworkCore
+namespace Poc.EntityFrameworkCore.Console
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            
         }
     }
 }

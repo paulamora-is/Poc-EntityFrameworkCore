@@ -9,9 +9,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Domains\" />
-    <Folder Include="ValueObjects\" />
-  </ItemGroup>
-
 </Project>
