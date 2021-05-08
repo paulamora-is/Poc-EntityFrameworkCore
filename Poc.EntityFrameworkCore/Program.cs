@@ -1,8 +1,10 @@
 ﻿using Poc.EntityFrameworkCore.Console.Data;
 using Poc.EntityFrameworkCore.Console.Domains;
 using Poc.EntityFrameworkCore.Console.ValueObjects;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using console = System;
+using Microsoft.EntityFrameworkCore;
 
 namespace Poc.EntityFrameworkCore.Console
 {
@@ -13,6 +15,45 @@ namespace Poc.EntityFrameworkCore.Console
             InserirDados();
             InserirDadosEmMassa();
             ConsultarDados();
+            CasdastrarPedido();
+            CarregarProdutoAdiantado();
+        }
+
+        private static void CarregarProdutoAdiantado()
+        {
+            var db = new ApplicationContext();
+            var pedidos = db.Pedidos.Include(pedidos => pedidos.Itens)
+                .ThenInclude(p => p.Produto)
+                .ToList();
+
+            //Console.WriteLine(pedidos.Count);
+
+        }
+        private static void CasdastrarPedido()
+        {
+            var db = new ApplicationContext();
+            var cliente = db.Clientes.FirstOrDefault();
+            var produto = db.Produtos.FirstOrDefault();
+            var pedido = new Pedido
+            {
+                ClienteId = cliente.Id,
+                TipoFrete = TipoFrete.FOB,
+                Iniciado = DateTime.Now,
+                Finalizado = DateTime.Now,
+                Status = StatusPedido.Analise,
+                Itens = new List<PedidoItem>
+                {
+                    new PedidoItem
+                    {
+                        ProdutoId = produto.Id,
+                        Desconto = 0,
+                        Quantidade = 2,
+                        Valor = 10
+                    }
+                }
+            };
+            db.Add(pedido);
+            db.SaveChanges();
         }
 
         private static void InserirDados()
@@ -30,7 +71,6 @@ namespace Poc.EntityFrameworkCore.Console
             db.Set<Produto>().Add(produtos);
 
             var registros = db.SaveChanges();
-            console.Console.WriteLine($"Total registros {registros}");
         }
 
         private static void InserirDadosEmMassa()
@@ -78,7 +118,6 @@ namespace Poc.EntityFrameworkCore.Console
             db.AddRange(produtos, cliente); //forma de adicionar tipos de objetos
             db.AddRange(listaClientes); 
             var registros = db.SaveChanges();
-            console.Console.WriteLine($"Total registros {registros}");
         }
 
         private static void ConsultarDados()
@@ -89,7 +128,6 @@ namespace Poc.EntityFrameworkCore.Console
                 .ToList();
             foreach (var cliente in clientes)
             {
-                console.Console.WriteLine($"Consulta: {cliente.Id}");
                 //db.Clientes.Find(cliente.Id); //retornar registros em memória
                 db.Clientes.FirstOrDefault(c => c.Id == cliente.Id);
             };
