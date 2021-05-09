@@ -17,13 +17,46 @@ namespace Poc.EntityFrameworkCore.Console
             ConsultarDados();
             CasdastrarPedido();
             CarregarProdutoAdiantado();
+            AtualizarDado();
+            RemoverRegistro();
+        }
+        private static void RemoverRegistro()
+        {
+            using var db = new ApplicationContext();
+            //var cliente = db.Clientes.Find(2); //primeiro  localiza o registro pra depois executar o comando de deletar
+            var cliente = new Cliente { Id = 3 }; //nesse caso, o EFC faz somente uma interação na bd que é o de deletar
+            //db.Clientes.Remove(cliente); //uma forma de remover
+            db.Entry(cliente).State = EntityState.Deleted; //outra forma de remover
+            //db.Remove(cliente); // outra forma de remover
+            db.SaveChanges();
+        }
+
+        private static void AtualizarDado()
+        {
+            using var db = new ApplicationContext();
+            //var cliente = db.Clientes.Find(1); //uma forma de buscar o id do cliente
+            var cliente = new Cliente
+            {
+                Id = 1
+            };
+            var exemploClienteDesconectado = new
+            {
+                Nome = "Cliente Desconectado 2",
+                Telefone = "99877896"
+            };
+            db.Attach(cliente); 
+            db.Entry(cliente).CurrentValues.SetValues(exemploClienteDesconectado);
+            //cliente.Nome = "Nome atualizado dois"; //uma forma de setar o valor no campo nome
+            //db.Clientes.Update(cliente); //atualiza toda a tabela
+            db.SaveChanges();
+            
         }
 
         private static void CarregarProdutoAdiantado()
         {
-            var db = new ApplicationContext();
+            using var db = new ApplicationContext();
             var pedidos = db.Pedidos.Include(pedidos => pedidos.Itens)
-                .ThenInclude(p => p.Produto)
+                    .ThenInclude(p => p.Produto)
                 .ToList();
 
             //Console.WriteLine(pedidos.Count);
@@ -31,7 +64,7 @@ namespace Poc.EntityFrameworkCore.Console
         }
         private static void CasdastrarPedido()
         {
-            var db = new ApplicationContext();
+            using var db = new ApplicationContext();
             var cliente = db.Clientes.FirstOrDefault();
             var produto = db.Produtos.FirstOrDefault();
             var pedido = new Pedido
@@ -114,7 +147,7 @@ namespace Poc.EntityFrameworkCore.Console
                }
             };
 
-            var db = new ApplicationContext();
+            using var db = new ApplicationContext();
             db.AddRange(produtos, cliente); //forma de adicionar tipos de objetos
             db.AddRange(listaClientes); 
             var registros = db.SaveChanges();
@@ -122,7 +155,7 @@ namespace Poc.EntityFrameworkCore.Console
 
         private static void ConsultarDados()
         {
-            var db = new ApplicationContext();
+            using var db = new ApplicationContext();
             var clientes = db.Clientes.Where(c => c.Id > 0)
                 .OrderBy(c => c.Id)
                 .ToList();
